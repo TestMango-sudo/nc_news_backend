@@ -80,23 +80,28 @@ function createArticles(articleData, userData, topicData) {
     });
 }
 
-function createComments(commentData, userData, articleData) {
+function createComments(commentData, userData, formattedArticle_List) {
   return db.query(`CREATE TABLE comments(
     comment_id SERIAL PRIMARY KEY,
     article_id INT REFERENCES articles(article_id),
     body TEXT,
     votes INT DEFAULT 0,
-    author vARCHAR REFERENCES users(username),
+    author VARCHAR REFERENCES users(username),
     created_at TIMESTAMP
-    )`)
-    .then((article_id, body, votes, author, created_at) => { 
-      const article_stats = articleLookUp(articleData)
-      console.log(article_stats, "<<<<<< ----- art STATS")
-    //   const comments_list = commentData.map((comment) => {
-    //     added_create = convertTimestampToDate(comment)
-    //     return [comment.article_id, body, votes, author, added_create.created_at]
-    // //   })
-});
+     )`).then(() => {
+    const articles_list = db.query("SELECT article_ID, title FROM articles").then((art1) => {
+      const article_data = articleLookUp(art1.rows)
+        const comments = commentData.map((comment) => {
+          added_create = convertTimestampToDate(comment)
+          return [comment.article_id = article_data[comment.article_id], comment.body, comment.votes, comment.author, added_create.created_at]
+        })
+          const formatted_Comment_List = format(`INSERT INTO comments 
+            (article_id, body, votes, author, created_at) VALUES %L RETURNING *`, comments)
+        return db.query(formatted_Comment_List)
+
+    })
+  })
 }
+
 
 module.exports = seed;
