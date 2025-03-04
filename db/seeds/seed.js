@@ -1,7 +1,7 @@
 const db = require("../connection")
 const format = require("pg-format");
 const { convertTimestampToDate, articleLookUp } = require("./utils");
-const { articleData } = require("../data/test-data");
+// const { articleData } = require("../data/test-data");
 
 const seed = ({ topicData, userData, articleData, commentData }) => {
         return db.query('DROP TABLE IF EXISTS comments;')
@@ -38,11 +38,8 @@ function createUsers(userData) {
       });
       const formatted_userlist = format(
         `INSERT INTO users (username, name, avatar_url) VALUES %L RETURNING *`, user_list)
-      return db.query(formatted_userlist)
-      
+      return db.query(formatted_userlist)      
     })
-  
-
 }
 
 function createTopics(topicData) {
