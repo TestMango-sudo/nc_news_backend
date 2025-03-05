@@ -1,7 +1,6 @@
 const db = require("../connection")
 const format = require("pg-format");
 const { convertTimestampToDate, articleLookUp } = require("./utils");
-// const { articleData } = require("../data/test-data");
 
 const seed = ({ topicData, userData, articleData, commentData }) => {
         return db.query('DROP TABLE IF EXISTS comments;')
@@ -28,6 +27,22 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
         })
 }
 
+function createTopics(topicData) {
+  return db.query(`CREATE TABLE topics(
+    slug VARCHAR(20) PRIMARY KEY NOT NULL,
+    description VARCHAR,
+    img_url VARCHAR(1000)
+    )`).then(() => {
+    const topic_list = topicData.map((topic) => {
+      return [topic.slug, topic.description, topic.img_url]
+    });
+    const formatted_topicList = format(
+      `INSERT INTO topics (slug, description, img_url) VALUES %L RETURNING *`, topic_list)
+    return db.query(formatted_topicList);
+  })
+}
+
+
 function createUsers(userData) {
   return db.query(`CREATE TABLE users (
     username VARCHAR PRIMARY KEY NOT NULL,
@@ -42,20 +57,6 @@ function createUsers(userData) {
     })
 }
 
-function createTopics(topicData) {
-  return db.query(`CREATE TABLE topics(
-    slug VARCHAR(20) PRIMARY KEY NOT NULL,
-    description VARCHAR,
-    img_url VARCHAR(1000)
-    )`).then(() => {
-    const topic_list = topicData.map((topic) => {
-      return [topic.slug, topic.desscription, topic.img_url]
-    });
-    const formatted_topicList = format(
-      `INSERT INTO topics (slug, description, img_url) VALUES %L RETURNING *`, topic_list)
-    return db.query(formatted_topicList);
-  })
-}
 
 function createArticles(articleData, userData, topicData) {
   return db.query(`CREATE TABLE articles(
@@ -88,9 +89,10 @@ function createComments(commentData, userData, formattedArticle_List) {
      )`).then(() => {
     const articles_list = db.query("SELECT article_ID, title FROM articles").then((art1) => {
       const article_data = articleLookUp(art1.rows)
+      console.log(article_data)
         const comments = commentData.map((comment) => {
           added_create = convertTimestampToDate(comment)
-          return [comment.article_id = article_data[comment.article_id], comment.body, comment.votes, comment.author, added_create.created_at]
+          return [article_data[comment.article_title], comment.body, comment.votes, comment.author, added_create.created_at]
         })
           const formatted_Comment_List = format(`INSERT INTO comments 
             (article_id, body, votes, author, created_at) VALUES %L RETURNING *`, comments)
