@@ -6,7 +6,6 @@ const seed = require("../db/seeds/seed")
 const data = require("../db/data/test-data");
 
 
-
 beforeEach(()=>{
     return seed(data);
 })
@@ -14,7 +13,7 @@ beforeEach(()=>{
 afterAll(()=>{
    return db.end();
 })
-/* Set up your beforeEach & afterAll functions here */
+
 
 describe("GET: /notanendpoint", () => {
     test("200: server responds with path not found when an incorrect endpoint is used.'",() => {
@@ -36,10 +35,8 @@ describe("GET /api", () => {
       });
   });
 });
-  
 describe('GET /api/topics', () => {
   test("200: Responds with an object listing all topics with a slug and description", () => {
-    seed(data).then(()=>{
     return request(app)
       .get("/api/topics")
       .expect(200)
@@ -51,4 +48,27 @@ describe('GET /api/topics', () => {
       });
     })
   })
-})
+
+describe("GET /api/articles/:id", () => {
+  test("200: Responds with an article by id for the number passed in.", () => {
+    return request(app)
+      .get("/api/articles/2")
+      .expect(200)
+      .then(({ body }) => {
+        const article = body.article
+        expect(article.article_id).toBe(2);
+        expect(article.author).toBe('icellusedkars')
+        expect(article.topic).toBe('mitch')
+        expect(typeof article.article_img_url).toBe('string')
+      });
+  });
+  test("400: Responds with an error if the article is not found.", () => {
+    return request(app)
+      .get("/api/articles/99")
+      .expect(400)
+      .then(({ body} ) => {
+        expect(body.msg).toEqual('article not found');
+      });
+  });
+ 
+});
