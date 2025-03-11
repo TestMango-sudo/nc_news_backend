@@ -72,3 +72,20 @@ describe("GET /api/articles/:id", () => {
   });
  
 });
+describe('GET /api/articles', () => {
+  test("200: Responds with an object listing all articles", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        console.log(body, "<<<from test")
+        body.articles.forEach((article) => {
+          expect(typeof article.article_id).toBe('number')
+          expect(typeof article.title).toBe('string')
+          expect(typeof article.body).toBe('string')
+          expect(typeof article.created_at).toBe('string')
+      });
+    });
+  })
+})
+
