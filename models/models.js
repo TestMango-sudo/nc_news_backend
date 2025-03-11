@@ -12,3 +12,4 @@ exports.fetchArticleById = (article_id) => {
         return data.rows
         })
 }
+
