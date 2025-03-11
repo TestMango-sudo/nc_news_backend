@@ -17,3 +17,4 @@ exports.getArticleById = (req, res) => {
         else{res.status(400).send({msg: 'article not found'})}
     })
 }
+
