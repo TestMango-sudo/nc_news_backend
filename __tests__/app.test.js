@@ -89,3 +89,29 @@ describe('GET /api/articles', () => {
   })
 })
 
+
+describe('GET /api/articles/:article_id/comments', () => {
+  test("400: responds with an error message when the given article has no comment", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('No comments yet posted against this article.')
+      })
+  });
+})
+describe ('GET /api/articles/:article_id/comments', () => {
+  test("200: responds with an array of comments for the given article_id of which each comment should have comment_id, vote, created_at, author, body and article_id", () => {
+    return request(app)
+      .get("/api/articles/9/comments")
+      .expect(200)
+      .then(({ body }) => {
+        body.comments.forEach((comment) => {
+          expect(typeof comment.author).toBe('string')
+          expect(typeof comment.votes).toBe('number')
+          expect(comment.article_id).toBe(9)
+        })
+      });
+  })
+})
+
