@@ -13,6 +13,7 @@ exports.getAllTopics = (req, res) => {
 exports.getAllArticles = (req, res) => { 
     //console.log('Getting All Articles')
     fetchAllArticles().then((data) => { 
+        console.log(data, "<<<<FROM CONTROLLERS")
         if (data.length === 0) {
             res.status(400).send({msg: 'No articles found' })
         }

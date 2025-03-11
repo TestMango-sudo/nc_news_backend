@@ -89,7 +89,6 @@ function createComments(commentData, userData, formattedArticle_List) {
      )`).then(() => {
     const articles_list = db.query("SELECT article_ID, title FROM articles").then((art1) => {
       const article_data = articleLookUp(art1.rows)
-      console.log(article_data)
         const comments = commentData.map((comment) => {
           added_create = convertTimestampToDate(comment)
           return [article_data[comment.article_title], comment.body, comment.votes, comment.author, added_create.created_at]
