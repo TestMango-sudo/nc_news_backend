@@ -55,7 +55,7 @@
     }
   },
     "PATCH /api/articles/:article_id": {
-    "description": "aDjust the number of votes for an article, indicated by the article_id",
+    "description": "Adjust the number of votes for an article, indicated by the article_id",
     "queries": ["article_id", "body: {inc_votes: 50}"],
     "exampleResponse": {
       "article_id": 2,
@@ -66,6 +66,14 @@
       "created_at": "2020-10-16T05:03:00.000Z",
       "votes": 50,
       "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "delete the given comment by comment_id, empty object returned if sucessful",
+    "queries": ["comment_id"],
+    "exampleResponse": {}
+  
+
     }
   }
 

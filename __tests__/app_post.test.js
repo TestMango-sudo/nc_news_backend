@@ -56,7 +56,6 @@ describe("PATCH: /api/articles/:article_id/", () => {
             .expect(201)
             .then(({ body }) => {
                 const returnedArticle = body.article_Updated
-                console.log(returnedArticle)
                 expect(returnedArticle.article_id).toBe(2)
                 expect(returnedArticle.author).toBe('icellusedkars')
                 expect(typeof returnedArticle.created_at).toBe('string')
@@ -87,4 +86,22 @@ describe("PATCH: /api/articles/:article_id/", () => {
     })
 
 })
- 
+describe("DELETE: /api/comments/:comment_id", () => { 
+    test("404: server responds with a message to indicate when a non-existent article_id has been passed.", () => { 
+        return request(app)
+            .delete('/api/comments/106')
+            .expect((404))
+            .then(({ body }) => {
+                const msg = body.data
+                expect(msg.msg).toEqual('no comment found with that ID.')
+            })
+    })
+    test.only("204: server repsonds with 204 when item deleted.", () => { 
+        return request(app)
+            .delete('/api/comments/3')
+            .expect((204))
+            .then(({ body }) => {
+                expect(body).toEqual({})
+            })
+    })
+})

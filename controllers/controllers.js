@@ -1,5 +1,5 @@
 const articles = require("../db/data/test-data/articles")
-const { fetchAllTopics, fetchArticleById, fetchAllArticles, fetchCommentsByArticleId, addCommentByArticleId, modifyVotesbyArticle } = require("../models/models")
+const { fetchAllTopics, fetchArticleById, fetchAllArticles, fetchCommentsByArticleId, addCommentByArticleId, modifyVotesbyArticle, removeCommentById } = require("../models/models")
 
 exports.getAllTopics = (req, res) => {
     fetchAllTopics().then((data) => { 
@@ -65,5 +65,18 @@ exports.patchArticleVotes = (req, res) => {
             res.status(201).send({article_Updated: data[0]})
         }
         
+    })
+}
+
+exports.deleteCommentById = (req, res) => { 
+    const { comment_id } = req.params
+    removeCommentById(comment_id).then((data) => {
+        console.log(data, "<<FROM CONTROLLER")
+        if (data.msg === `Comment ${comment_id} deleted.`) { 
+            res.status(204).send({msg: ""})
+        }
+        else {
+            res.status(404).send({ data })
+        }
     })
 }

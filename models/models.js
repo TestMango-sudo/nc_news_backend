@@ -49,3 +49,14 @@ exports.modifyVotesbyArticle = (article_id, votes) => {
     })
 }
 
+exports.removeCommentById = (comment_id) => { 
+    return db.query(`DELETE FROM comments WHERE comment_id = $1`, [comment_id]).then((data) => {
+        if (data.rowCount === 0) {
+            return ({msg: 'no comment found with that ID.'})
+        }
+         return ({ msg: `Comment ${comment_id} deleted.` })
+        
+    }).catch(err => {
+        return { msg: err.detail }
+    })
+}
