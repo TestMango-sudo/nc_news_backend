@@ -1,4 +1,5 @@
 const db = require("../db/connection")
+const { commentData } = require("../db/data/test-data")
 
 
 exports.fetchAllTopics = () => {
@@ -27,5 +28,16 @@ exports.fetchCommentsByArticleId = (article_id) => {
         .then((data) => {
             return data.rows
          })
+}
+
+exports.addCommentByArticleId = (article_id, commentData) => {
+    return db.query(`INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3)`, [commentData.username, commentData.body, article_id]).then((result) => {
+        res.json(result)
+        console.log(res.json(result), "FROM MODEL")
+        return data
+    }).catch(err => {
+        console.error('Query Failed:', err.detail)
+        return {msg: err.detail}
+    })
 }
 

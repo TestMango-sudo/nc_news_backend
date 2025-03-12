@@ -1,7 +1,7 @@
 const express = require("express")
 const endpoints = require("./endpoints.json")
 const {handlePsqlErrors, handleserverError} = require("./controllers/errorController")
-const {getAllTopics, getArticleById, getAllArticles, getCommentsByArticleId} = require("./controllers/controllers")
+const {getAllTopics, getArticleById, getAllArticles, getCommentsByArticleId, postNewCommentbyArticleID} = require("./controllers/controllers")
 
 const app = express()
 app.use(express.json())
@@ -16,7 +16,9 @@ app.get("/api/articles", getAllArticles)
 
 app.get("/api/articles/:id", getArticleById);
 
-app.get("/api/articles/:article_id/comments", getCommentsByArticleId )
+app.get("/api/articles/:article_id/comments", getCommentsByArticleId)
+
+app.post("/api/articles/:article_id/comments", postNewCommentbyArticleID)
 
 app.all("/*", (req, res, next) => {
     res.status(404).send({ msg: 'path not found' });
