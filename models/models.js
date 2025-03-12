@@ -31,13 +31,21 @@ exports.fetchCommentsByArticleId = (article_id) => {
 }
 
 exports.addCommentByArticleId = (article_id, commentData) => {
-    return db.query(`INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3)`, [commentData.username, commentData.body, article_id]).then((result) => {
-        res.json(result)
-        console.log(res.json(result), "FROM MODEL")
-        return data
+    return db.query(`INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING *`, [commentData.username, commentData.body, article_id]).then((result) => {
+        return result.rows
     }).catch(err => {
-        console.error('Query Failed:', err.detail)
         return {msg: err.detail}
+    })
+}
+
+exports.modifyVotesbyArticle = (article_id, votes) => { 
+    return db.query('UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *', [votes, article_id]).then((data) => {
+        if (data.rows.length > 0) {
+            return data.rows
+        }
+        else return({msg: 'Article ID not found'})
+    }).catch(err => {
+        return { msg: err.detail }
     })
 }
 

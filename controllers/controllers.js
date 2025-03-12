@@ -1,5 +1,5 @@
 const articles = require("../db/data/test-data/articles")
-const { fetchAllTopics, fetchArticleById, fetchAllArticles, fetchCommentsByArticleId, addCommentByArticleId } = require("../models/models")
+const { fetchAllTopics, fetchArticleById, fetchAllArticles, fetchCommentsByArticleId, addCommentByArticleId, modifyVotesbyArticle } = require("../models/models")
 
 exports.getAllTopics = (req, res) => {
     fetchAllTopics().then((data) => { 
@@ -46,12 +46,24 @@ exports.postNewCommentbyArticleID = (req, res) => {
     const  comment_info = req.body
     addCommentByArticleId(article_id, comment_info).then((data) => { 
         if (data.msg) {
-            console.log(data, "FROM CONTROLLER")
-            res.status(400).send({msg: data.msg})
+            res.status(404).send({msg: data.msg})
         }
         else {
-            console.log(data, "FROM SUCESS")
-            res.status(200).send({comment: comment_info})
+            res.status(201).send({comment_added: data})
         }
+    })
+}
+
+exports.patchArticleVotes = (req, res) => { 
+    const { article_id } = req.params
+    const votes = req.body.inc_votes
+    modifyVotesbyArticle(article_id, votes).then((data) => { 
+        if (data.msg) {
+            res.status(404).send(data)
+        }
+        else {
+            res.status(201).send({article_Updated: data[0]})
+        }
+        
     })
 }
