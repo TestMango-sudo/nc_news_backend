@@ -85,7 +85,7 @@ function createComments(commentData, userData, formattedArticle_List) {
     body TEXT,
     votes INT DEFAULT 0,
     author VARCHAR REFERENCES users(username),
-    created_at TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
      )`).then(() => {
     const articles_list = db.query("SELECT article_ID, title FROM articles").then((art1) => {
       const article_data = articleLookUp(art1.rows)

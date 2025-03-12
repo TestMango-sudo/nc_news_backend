@@ -1,5 +1,5 @@
 const articles = require("../db/data/test-data/articles")
-const { fetchAllTopics, fetchArticleById, fetchAllArticles, fetchCommentsByArticleId } = require("../models/models")
+const { fetchAllTopics, fetchArticleById, fetchAllArticles, fetchCommentsByArticleId, addCommentByArticleId } = require("../models/models")
 
 exports.getAllTopics = (req, res) => {
     fetchAllTopics().then((data) => { 
@@ -41,3 +41,17 @@ exports.getCommentsByArticleId = (req, res) => {
     })
 }
 
+exports.postNewCommentbyArticleID = (req, res) => {
+    const { article_id } = req.params
+    const  comment_info = req.body
+    addCommentByArticleId(article_id, comment_info).then((data) => { 
+        if (data.msg) {
+            console.log(data, "FROM CONTROLLER")
+            res.status(400).send({msg: data.msg})
+        }
+        else {
+            console.log(data, "FROM SUCESS")
+            res.status(200).send({comment: comment_info})
+        }
+    })
+}
