@@ -1,4 +1,4 @@
-const endpointsJson = require("../endpoints.json");
+const endpointsJson = require("../endpoints.json")
 const request = require("supertest")
 const app = require("../app")
 const db = require("../db/connection")
@@ -110,6 +110,20 @@ describe ('GET /api/articles/:article_id/comments', () => {
           expect(typeof comment.author).toBe('string')
           expect(typeof comment.votes).toBe('number')
           expect(comment.article_id).toBe(9)
+        })
+      });
+  })
+})
+describe ('GET /users', () => {
+  test("200: responds with an array of users. Each user should contain the following fields: username, name and avatar_url", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        body.users.forEach((user) => {
+          expect(typeof user.username).toBe('string')
+          expect(typeof user.name).toBe('string')
+          expect(typeof user.avatar_url).toBe('string')
         })
       });
   })

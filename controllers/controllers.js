@@ -1,5 +1,14 @@
-const articles = require("../db/data/test-data/articles")
-const { fetchAllTopics, fetchArticleById, fetchAllArticles, fetchCommentsByArticleId, addCommentByArticleId, modifyVotesbyArticle, removeCommentById } = require("../models/models")
+const { fetchAllTopics, fetchArticleById, fetchAllArticles, fetchCommentsByArticleId, addCommentByArticleId, modifyVotesbyArticle, removeCommentById, fetchAllUsers } = require("../models/models")
+
+exports.getAllUsers = (req, res) => { 
+    console.log("getting users from CONTROLLER")
+    fetchAllUsers().then((data) => { 
+        if (data.length === 0) {
+            res.status(400).send({msg: 'No users found' })
+        }
+        res.status(200).send({ users: data})
+    })
+}
 
 exports.getAllTopics = (req, res) => {
     fetchAllTopics().then((data) => { 
@@ -11,7 +20,6 @@ exports.getAllTopics = (req, res) => {
 }
 
 exports.getAllArticles = (req, res) => { 
-    //console.log('Getting All Articles')
     fetchAllArticles().then((data) => { 
         if (data.length === 0) {
             res.status(400).send({msg: 'No articles found' })

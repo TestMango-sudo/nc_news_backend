@@ -1,6 +1,13 @@
 const db = require("../db/connection")
 const { commentData } = require("../db/data/test-data")
 
+exports.fetchAllUsers = () => {
+      console.log("getting users")
+    return db.query(`SELECT * FROM users`).then((data) => { 
+        console.log (data.rows)
+        return data.rows
+    })
+}
 
 exports.fetchAllTopics = () => {
     return db.query(`SELECT * FROM topics`).then((data) => { 
