@@ -20,7 +20,8 @@ exports.getAllTopics = (req, res) => {
 }
 
 exports.getAllArticles = (req, res) => { 
-    fetchAllArticles().then((data) => { 
+    const { sort_by, order} = req.query
+    fetchAllArticles(sort_by, order).then((data) => { 
         if (data.length === 0) {
             res.status(400).send({msg: 'No articles found' })
         }

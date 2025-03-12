@@ -1,5 +1,6 @@
 const db = require("../db/connection")
 const { commentData } = require("../db/data/test-data")
+const { sort } = require("../db/data/test-data/articles")
 
 exports.fetchAllUsers = () => {
       console.log("getting users")
@@ -15,10 +16,20 @@ exports.fetchAllTopics = () => {
     })
 }
 
-exports.fetchAllArticles = () => {
-    console.log('Getting all articles')
-    return db.query(`SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id)::INT AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY created_at DESC`)
-        .then((data) => { 
+exports.fetchAllArticles = (sort_by, order) => {
+    let queryString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id)::INT AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY $1 `
+    let queryOrder = 'DESC'
+    let sortField = 'created_at'
+    if (sort_by) {
+        sortField = `${sort_by}`
+    }
+    if (order) {
+        queryOrder = `${order}`
+    }
+    queryString = queryString+queryOrder
+    console.log(queryString, "<<RECEIVED INTO MODel")
+    return db.query(queryString,[sort_by]).then((data) => { 
+            console.log(data.rows, "FROM CONTROLLER")
             return data.rows
     }) 
 }
