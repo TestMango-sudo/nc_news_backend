@@ -16,7 +16,7 @@ afterAll(()=>{
 
 
 describe("GET: /notanendpoint", () => {
-    test("200: server responds with path not found when an incorrect endpoint is used.'",() => {
+    test("404: server responds with path not found when an incorrect endpoint is used.'",() => {
         return request(app)
             .get('/api/notanendpoint')
             .expect(404)
@@ -44,6 +44,7 @@ describe('GET /api/topics', () => {
         body.topics.forEach((topic) => {
           expect(typeof topic.slug).toBe('string')
           expect(typeof topic.description).toBe('string')
+          expect(body.topics.length).toBe(3)
         });
       });
     })
@@ -62,7 +63,7 @@ describe("GET /api/articles/:id", () => {
         expect(typeof article.article_img_url).toBe('string')
       });
   });
-  test("400: Responds with an error if the article is not found.", () => {
+  test("404: Responds with an error if the article is not found.", () => {
     return request(app)
       .get("/api/articles/99")
       .expect(400)
@@ -105,7 +106,19 @@ describe('GET /api/articles', () => {
       .get("/api/articles?sort_by=article_id&order=ASC")
       .expect(200)
       .then(({ body }) => {
-        console.log(body.articles, "<<FROM TEST")
+        body.articles.forEach((article) => {
+          expect(typeof article.article_id).toBe('number')
+          expect(typeof article.title).toBe('string')
+          expect(typeof article.topic).toBe('string')
+          expect(typeof article.created_at).toBe('string')
+      });
+    });
+  })
+  test("200: Responds with an object listing all articles sorted by requested field and topic", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_id&order=ASC&topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
         body.articles.forEach((article) => {
           expect(typeof article.article_id).toBe('number')
           expect(typeof article.title).toBe('string')

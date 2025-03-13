@@ -1,7 +1,7 @@
 const { fetchAllTopics, fetchArticleById, fetchAllArticles, fetchCommentsByArticleId, addCommentByArticleId, modifyVotesbyArticle, removeCommentById, fetchAllUsers } = require("../models/models")
 
 exports.getAllUsers = (req, res) => { 
-    console.log("getting users from CONTROLLER")
+    console.log("getting users")
     fetchAllUsers().then((data) => { 
         if (data.length === 0) {
             res.status(400).send({msg: 'No users found' })
@@ -20,8 +20,8 @@ exports.getAllTopics = (req, res) => {
 }
 
 exports.getAllArticles = (req, res) => { 
-    const { sort_by, order} = req.query
-    fetchAllArticles(sort_by, order).then((data) => { 
+    const { sort_by, order, topic } = req.query
+    fetchAllArticles(sort_by, order, topic).then((data) => { 
         if (data.length === 0) {
             res.status(400).send({msg: 'No articles found' })
         }
@@ -80,7 +80,6 @@ exports.patchArticleVotes = (req, res) => {
 exports.deleteCommentById = (req, res) => { 
     const { comment_id } = req.params
     removeCommentById(comment_id).then((data) => {
-        console.log(data, "<<FROM CONTROLLER")
         if (data.msg === `Comment ${comment_id} deleted.`) { 
             res.status(204).send({msg: ""})
         }

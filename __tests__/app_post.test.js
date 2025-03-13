@@ -46,6 +46,16 @@ describe("POST: /api/articles/:article_id/comments", () => {
                 expect(body.msg).toEqual('Key (author)=(clemfandango) is not present in table \"users\".')
             })
     })
+    // test.only("404: Server responds to an invalid article_id being passed in.",() => {
+    //     const newComment = {username: "clemfandango", body: "Yes, I can hear you clemfandango."}
+    //     return request(app)
+    //         .post('/api/articles/mango/comments').send(newComment)
+    //         .expect(201)
+    //         .then(({ body }) => {
+    //             console.log(body, "<<FROM TEST")
+    //             expect(body.msg).toEqual('mango is not a valid id')
+    //         })
+    // })
 })
 
 describe("PATCH: /api/articles/:article_id/", () => {
