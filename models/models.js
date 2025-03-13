@@ -5,7 +5,6 @@ const { sort } = require("../db/data/test-data/articles")
 exports.fetchAllUsers = () => {
       console.log("getting users")
     return db.query(`SELECT * FROM users`).then((data) => { 
-        console.log (data.rows)
         return data.rows
     })
 }
@@ -16,27 +15,33 @@ exports.fetchAllTopics = () => {
     })
 }
 
-exports.fetchAllArticles = (sort_by, order) => {
+exports.fetchAllArticles = (sort_by, order, topic) => {
+    let queryString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id)::INT AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY $1 DESC`
     let queryOrder = 'DESC'
     let sortField = 'created_at'
-    let queryString
-    if (!sort_by && !order){
-        queryString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id)::INT AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY $1 DESC`
+    let queryString1 = `SELECT * FROM articles `
+    let bindParameters = []
+    if (sort_by) {
+        sortField = `${sort_by}`
+    }
+    if (order) {
+        queryOrder = `${order}`
+    }
+    if (topic) {
+        queryString1 = queryString1 + `WHERE topic = $1 `
+        bindParameters= [topic]
+    }
+    if (sort_by === undefined && order === undefined && topic === undefined) { 
         return db.query(queryString,[sort_by]).then((data) => { 
-            console.log(data.rows, "FROM CONTROLLER")
             return data.rows
-        })
-        }
-    else { 
-        if (sort_by) {sortField = `${sort_by}`}
-        if (order) { queryOrder = `${order}` }    
-        queryString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url FROM articles ORDER BY $1 `+queryOrder
-        console.log(queryString, "<<RECEIVED INTO MODel")
-        return db.query(queryString,[sort_by]).then((data) => { 
-            console.log(data.rows, "FROM CONTROLLER")
+    }) 
+    }
+    else {
+        queryString1 = queryString1 + `ORDER BY ${sortField} ${queryOrder}`
+        return db.query(queryString1,bindParameters).then((data) => { 
             return data.rows
-    })
-} 
+    }) 
+    }   
 }
 
 exports.fetchArticleById = (article_id) => {
