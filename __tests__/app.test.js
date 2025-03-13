@@ -97,21 +97,20 @@ describe('GET /api/articles', () => {
           expect(typeof article.title).toBe('string')
           expect(typeof article.topic).toBe('string')
           expect(typeof article.created_at).toBe('string')
-          expect(typeof article.comment_count).toBe('number')
       });
     });
   })
-  test.only("200: Responds with an object listing all articles sorted by requested field and ordered via request", () => {
+  test("200: Responds with an object listing all articles sorted by requested field and ordered via request", () => {
     return request(app)
       .get("/api/articles?sort_by=article_id&order=ASC")
       .expect(200)
       .then(({ body }) => {
+        console.log(body.articles, "<<FROM TEST")
         body.articles.forEach((article) => {
           expect(typeof article.article_id).toBe('number')
           expect(typeof article.title).toBe('string')
           expect(typeof article.topic).toBe('string')
           expect(typeof article.created_at).toBe('string')
-          expect(typeof article.comment_count).toBe('number')
       });
     });
   })

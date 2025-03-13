@@ -17,21 +17,26 @@ exports.fetchAllTopics = () => {
 }
 
 exports.fetchAllArticles = (sort_by, order) => {
-    let queryString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id)::INT AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY $1 `
     let queryOrder = 'DESC'
     let sortField = 'created_at'
-    if (sort_by) {
-        sortField = `${sort_by}`
-    }
-    if (order) {
-        queryOrder = `${order}`
-    }
-    queryString = queryString+queryOrder
-    console.log(queryString, "<<RECEIVED INTO MODel")
-    return db.query(queryString,[sort_by]).then((data) => { 
+    let queryString
+    if (!sort_by && !order){
+        queryString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id)::INT AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY $1 DESC`
+        return db.query(queryString,[sort_by]).then((data) => { 
             console.log(data.rows, "FROM CONTROLLER")
             return data.rows
-    }) 
+        })
+        }
+    else { 
+        if (sort_by) {sortField = `${sort_by}`}
+        if (order) { queryOrder = `${order}` }    
+        queryString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url FROM articles ORDER BY $1 `+queryOrder
+        console.log(queryString, "<<RECEIVED INTO MODel")
+        return db.query(queryString,[sort_by]).then((data) => { 
+            console.log(data.rows, "FROM CONTROLLER")
+            return data.rows
+    })
+} 
 }
 
 exports.fetchArticleById = (article_id) => {

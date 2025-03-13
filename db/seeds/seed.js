@@ -65,7 +65,7 @@ function createArticles(articleData, userData, topicData) {
     topic VARCHAR REFERENCES topics(slug),
     author VARCHAR REFERENCES users(username),
     body TEXT,
-    created_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     votes INT DEFAULT 0,
     article_img_url VARCHAR(1000))`).then((title, topic, author, body, created_at, votes, article_img_url) => { 
       const article_list = articleData.map((article) => {
