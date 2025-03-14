@@ -32,30 +32,38 @@ describe("POST: /api/articles/:article_id/comments", () => {
         const newComment = {username: "rogersop", body: "What an interesting comment I have added."}
         return request(app)
             .post('/api/articles/99/comments').send(newComment)
-            .expect(404)
+            .expect(400)
             .then(({ body }) => {
-                expect(body.msg).toEqual('Key (article_id)=(99) is not present in table "articles".')
+                expect(body.msg).toEqual('requested item does not exist')
             })
     })
     test("400: Server responds with a message if user does not exist",() => {
         const newComment = {username: "clemfandango", body: "Yes, I can hear you clemfandango."}
         return request(app)
             .post('/api/articles/2/comments').send(newComment)
-            .expect(404)
+            .expect(400)
             .then(({ body }) => {
-                expect(body.msg).toEqual('Key (author)=(clemfandango) is not present in table \"users\".')
+                expect(body.msg).toEqual('requested item does not exist')
             })
     })
-    // test.only("404: Server responds to an invalid article_id being passed in.",() => {
-    //     const newComment = {username: "clemfandango", body: "Yes, I can hear you clemfandango."}
-    //     return request(app)
-    //         .post('/api/articles/mango/comments').send(newComment)
-    //         .expect(201)
-    //         .then(({ body }) => {
-    //             console.log(body, "<<FROM TEST")
-    //             expect(body.msg).toEqual('mango is not a valid id')
-    //         })
-    // })
+    test("404: Server responds to an invalid article_id being passed in.",() => {
+        const newComment = {username: "clemfandango", body: "Yes, I can hear you clemfandango."}
+        return request(app)
+            .post('/api/articles/mango/comments').send(newComment)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toEqual('bad request')
+            })
+    })
+    test("405: Server responds to a malformed request.",() => {
+        const newComment = {usermango: "clemfandango", mango: "Yes, I can hear you clemfandango."}
+        return request(app)
+            .post('/api/articles/1/comments').send(newComment)
+            .expect(405)
+            .then(({ body }) => {
+                expect(body.msg).toEqual('Incorrect parameters supplied')
+            })
+    })
 })
 
 describe("PATCH: /api/articles/:article_id/", () => {
@@ -94,6 +102,16 @@ describe("PATCH: /api/articles/:article_id/", () => {
                 expect(body.msg).toEqual('Article ID not found')
             })
     })
+    test("400: Server responds with a inc_votes  is missing from body of request",() => {
+        const newVotes= { mango: 50 }
+        return request(app)
+            .patch('/api/articles/3').send(newVotes)
+            .expect(405)
+            .then(({ body }) => {
+                expect(body.msg).toEqual("Body of request malformed ")
+            })
+    })
+
 
 })
 describe("DELETE: /api/comments/:comment_id", () => { 
@@ -102,11 +120,10 @@ describe("DELETE: /api/comments/:comment_id", () => {
             .delete('/api/comments/106')
             .expect((404))
             .then(({ body }) => {
-                const msg = body.data
-                expect(msg.msg).toEqual('no comment found with that ID.')
+                expect(body.msg).toEqual('no comment found with that ID.')
             })
     })
-    test.only("204: server repsonds with 204 when item deleted.", () => { 
+    test("204: server repsonds with 204 when item deleted.", () => { 
         return request(app)
             .delete('/api/comments/3')
             .expect((204))

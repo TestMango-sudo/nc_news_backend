@@ -1,6 +1,6 @@
 const db = require("../db/connection")
-const { commentData } = require("../db/data/test-data")
 const { sort } = require("../db/data/test-data/articles")
+const {} = require("../controllers/utils")
 
 exports.fetchAllUsers = () => {
       console.log("getting users")
@@ -45,9 +45,12 @@ exports.fetchAllArticles = (sort_by, order, topic) => {
 }
 
 exports.fetchArticleById = (article_id) => {
-    return db.query(`SELECT * FROM articles WHERE article_id = $1`, [article_id]).then((data) => {
+    // return db.query(`SELECT * FROM articles WHERE article_id = $1`, [article_id]).then((data) => {
+    //     return data.rows
+    //     })
+    return db.query(`SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id)::INT AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id WHERE articles.article_id = $1 GROUP BY articles.article_id`, [article_id]).then((data) => { 
         return data.rows
-        })
+    })
 }
 
 exports.fetchCommentsByArticleId = (article_id) => {
@@ -58,12 +61,10 @@ exports.fetchCommentsByArticleId = (article_id) => {
          })
 }
 
-exports.addCommentByArticleId = (article_id, commentData) => {
-    return db.query(`INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING *`, [commentData.username, commentData.body, article_id]).then((result) => {
+exports.addCommentByArticleId = (article_id, username, body) => {
+    return db.query(`INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING *`, [username, body, article_id]).then((result) => {
         return result.rows
-    }).catch(err => {
-        return {msg: err.detail}
-    })
+     })
 }
 
 exports.modifyVotesbyArticle = (article_id, votes) => { 
