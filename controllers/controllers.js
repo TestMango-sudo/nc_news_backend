@@ -1,4 +1,6 @@
+const { errorMonitor } = require("supertest/lib/test")
 const { fetchAllTopics, fetchArticleById, fetchAllArticles, fetchCommentsByArticleId, addCommentByArticleId, modifyVotesbyArticle, removeCommentById, fetchAllUsers } = require("../models/models")
+
 
 exports.getAllUsers = (req, res) => { 
     console.log("getting users")
@@ -23,9 +25,10 @@ exports.getAllArticles = (req, res) => {
     const { sort_by, order, topic } = req.query
     fetchAllArticles(sort_by, order, topic).then((data) => { 
         if (data.length === 0) {
-            res.status(400).send({msg: 'No articles found' })
+            res.status(400).send({ msg: 'No articles found' })
+        } else {
+            res.status(200).send({ articles: data })
         }
-        res.status(200).send({articles: data})
     })
 }
 
@@ -50,22 +53,26 @@ exports.getCommentsByArticleId = (req, res) => {
     })
 }
 
-exports.postNewCommentbyArticleID = (req, res) => {
+exports.postNewCommentbyArticleID = (req, res, next) => {
     const { article_id } = req.params
-    const  comment_info = req.body
-    addCommentByArticleId(article_id, comment_info).then((data) => { 
-        if (data.msg) {
-            res.status(404).send({msg: data.msg})
-        }
-        else {
+    const { username, body } = req.body
+    if (!username || !body) {
+        console.log( "<<IM HERE")
+        next({ status: 405, msg: "Incorrect parameters supplied" })
+    }
+    addCommentByArticleId(article_id, username, body).then((data) => { 
             res.status(201).send({comment_added: data})
-        }
+    }).catch((err) => { 
+        next(err.code)
     })
 }
 
-exports.patchArticleVotes = (req, res) => { 
+exports.patchArticleVotes = (req, res, next) => { 
     const { article_id } = req.params
     const votes = req.body.inc_votes
+    if (votes === undefined || typeof votes !== 'number') {
+        next({ status: 405, msg: 'Body of request malformed ' })
+    }
     modifyVotesbyArticle(article_id, votes).then((data) => { 
         if (data.msg) {
             res.status(404).send(data)
@@ -74,17 +81,21 @@ exports.patchArticleVotes = (req, res) => {
             res.status(201).send({article_Updated: data[0]})
         }
         
-    })
+    }).catch((err) => {
+        next(err)
+     })
 }
 
-exports.deleteCommentById = (req, res) => { 
+exports.deleteCommentById = (req, res, next) => { 
     const { comment_id } = req.params
     removeCommentById(comment_id).then((data) => {
-        if (data.msg === `Comment ${comment_id} deleted.`) { 
-            res.status(204).send({msg: ""})
+        if (data.msg !== `Comment ${comment_id} deleted.`) { 
+            res.status(404).send({msg: data.msg})
         }
         else {
-            res.status(404).send({ data })
+            res.status(204).send({msg: ""})
         }
-    })
+    }).catch((err) => {
+        next(err.details)
+     })
 }

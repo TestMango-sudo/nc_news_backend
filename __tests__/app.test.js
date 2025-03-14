@@ -61,6 +61,7 @@ describe("GET /api/articles/:id", () => {
         expect(article.author).toBe('icellusedkars')
         expect(article.topic).toBe('mitch')
         expect(typeof article.article_img_url).toBe('string')
+        expect(typeof article.comment_count).toBe('number')
       });
   });
   test("404: Responds with an error if the article is not found.", () => {
@@ -122,11 +123,19 @@ describe('GET /api/articles', () => {
         body.articles.forEach((article) => {
           expect(typeof article.article_id).toBe('number')
           expect(typeof article.title).toBe('string')
-          expect(typeof article.topic).toBe('string')
+          expect(article.topic).toBe('mitch')
           expect(typeof article.created_at).toBe('string')
       });
     });
   })
+  test("200: Responds with if topic query is not in table", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_id&order=ASC&topic=mangos")
+      .expect(400)
+      .then(({ body }) => {
+          expect(body.msg).toBe('No articles found')
+      });
+    });
 })
 
 
