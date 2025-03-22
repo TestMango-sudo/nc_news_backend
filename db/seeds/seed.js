@@ -22,7 +22,7 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
         .then(() => {
           return createArticles(articleData, topicData);
         })
-        .then(() => {
+        .then((articleData) => {
           return createComments(commentData, userData, articleData);
         })
 }
@@ -78,7 +78,7 @@ function createArticles(articleData, userData, topicData) {
     });
 }
 
-function createComments(commentData, userData, formattedArticle_List) {
+function createComments(commentData, userData, articleData) {
   return db.query(`CREATE TABLE comments(
     comment_id SERIAL PRIMARY KEY,
     article_id INT REFERENCES articles(article_id),
@@ -87,17 +87,17 @@ function createComments(commentData, userData, formattedArticle_List) {
     author VARCHAR REFERENCES users(username),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
      )`).then(() => {
-    const articles_list = db.query("SELECT article_ID, title FROM articles").then((art1) => {
-      const article_data = articleLookUp(art1.rows)
-        const comments = commentData.map((comment) => {
+       const artTitleData = articleData.rows.map((article) => {
+         return {'title': article.title , 'article_id': article.article_id}
+       })
+      const article_data = articleLookUp(artTitleData)
+      const comments = commentData.map((comment) => {
           added_create = convertTimestampToDate(comment)
           return [article_data[comment.article_title], comment.body, comment.votes, comment.author, added_create.created_at]
         })
           const formatted_Comment_List = format(`INSERT INTO comments 
             (article_id, body, votes, author, created_at) VALUES %L RETURNING *`, comments)
         return db.query(formatted_Comment_List)
-
-    })
   })
 }
 
