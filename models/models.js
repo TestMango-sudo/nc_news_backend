@@ -16,7 +16,7 @@ exports.fetchAllTopics = () => {
 }
 
 exports.fetchAllArticles = (sort_by, order, topic) => {
-    let queryString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id)::INT AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY $1 DESC`
+    let queryString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.body, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id)::INT AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY $1 DESC`
     let queryOrder = 'DESC'
     let sortField = 'created_at'
     let queryString1 = `SELECT * FROM articles `
