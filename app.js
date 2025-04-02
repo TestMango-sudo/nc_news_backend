@@ -5,8 +5,12 @@ const {getAllTopics, getArticleById, getAllArticles, getCommentsByArticleId, pos
 const cors = require('cors');
 
 const app = express()
-app.use(cors())
-app.use(express.json())
+app.use(cors({
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+app.options('*', cors());
+app.use(express.json());
 
 app.get("/api", (req, res) => {
     res.status(200).send({ endpoints })
