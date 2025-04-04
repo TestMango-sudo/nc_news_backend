@@ -50,6 +50,33 @@ describe('GET /api/topics', () => {
     })
   })
 
+  //--------------
+describe("GET /api/articles/topics/:topic", () => {
+  test("200: Responds with a list of article by topic for the topic passed in.", () => {
+    return request(app)
+      .get("/api/articles/topics/mitch")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles
+        articles.forEach((article) => {
+          expect(article.topic).toBe('mitch')
+        })
+      });
+  });
+  test("404: Responds with an error if the topic is not found.", () => {
+    return request(app)
+      .get("/api/articles/topics/mangos")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual('Topic not found');
+      });
+  });
+})
+
+  //----------
+
+
+
 describe("GET /api/articles/:id", () => {
   test("200: Responds with an article by id for the number passed in.", () => {
     return request(app)
@@ -72,8 +99,8 @@ describe("GET /api/articles/:id", () => {
         expect(body.msg).toEqual('article not found');
       });
   });
- 
 });
+
 describe('GET /api/articles', () => {
   test("200: Responds with an object listing all articles and has comment count", () => {
     return request(app)

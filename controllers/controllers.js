@@ -1,5 +1,5 @@
 const { errorMonitor } = require("supertest/lib/test")
-const { fetchAllTopics, fetchArticleById, fetchAllArticles, fetchCommentsByArticleId, addCommentByArticleId, modifyVotesbyArticle, removeCommentById, fetchAllUsers } = require("../models/models")
+const { fetchAllTopics, fetchArticlesByTopic, fetchArticleById, fetchAllArticles, fetchCommentsByArticleId, addCommentByArticleId, modifyVotesbyArticle, removeCommentById, fetchAllUsers } = require("../models/models")
 
 
 exports.getAllUsers = (req, res) => { 
@@ -31,6 +31,20 @@ exports.getAllArticles = (req, res) => {
         }
     })
 }
+
+///////
+exports.getArticlesByTopic = (req, res) => { 
+    const { topic } = req.params
+    console.log(topic, "FORM CONTROLLER")
+    fetchArticlesByTopic(topic).then((data) => { 
+        if (data.length === 0) {
+            res.status(400).send({ msg: 'Topic not found' })
+        } else {
+            res.status(200).send({ articles: data })
+        }
+    })
+}
+////////
 
 exports.getArticleById = (req, res) => {
     const { id } = req.params   
